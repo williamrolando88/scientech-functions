@@ -8,7 +8,9 @@ on:
 jobs:
   deploy_functions:
     runs-on: ubuntu-latest
-    environment: Preview
+    environment: Production
+    concurrency:
+      group: ${{ github.workflow }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

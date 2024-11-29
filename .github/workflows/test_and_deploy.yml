@@ -28,6 +28,8 @@ jobs:
     needs: check_code
     if: success()
     environment: Preview
+    concurrency:
+      group: ${{ github.workflow }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
