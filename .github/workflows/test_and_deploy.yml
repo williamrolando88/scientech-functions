@@ -6,27 +6,8 @@ on:
       - main
 
 jobs:
-  check_code:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 22
-          cache: 'npm'
-      - name: Install Dependencies
-        run: npm ci
-      - name: Run Linters
-        run: npm run lint
-      # - name: Run Tests
-      #   run: npm run test
-
   deploy_functions:
     runs-on: ubuntu-latest
-    needs: check_code
-    if: success()
     environment: Preview
     concurrency:
       group: ${{ github.workflow }}
@@ -35,6 +16,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+        # - run: npm run test
       - run: npm install -g firebase-tools
       - uses: 'google-github-actions/auth@v2'
         with:
