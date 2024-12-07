@@ -1,6 +1,6 @@
-import { logger } from 'firebase-functions/v2';
-import { db } from '../../common/firebase';
 import { EventHandlerFunction } from '../../common/types/functions';
+import { ReceivedInvoice } from '../../common/types/purchases';
+import { receivedInvoiceActions } from './actionHandlers';
 
 export const onReceivedInvoiceWrittenFunction: EventHandlerFunction = async (
   event
@@ -9,29 +9,20 @@ export const onReceivedInvoiceWrittenFunction: EventHandlerFunction = async (
   const beforeInvoice = event.data?.before.data();
 
   if (!beforeInvoice) {
-    console.log('Creating invoice...');
-  }
-
-  if (!afterInvoice) {
-    console.log('Deleting invoice...');
+    console.log('Creating invoice: ', afterInvoice?.id);
+    receivedInvoiceActions.create(afterInvoice as ReceivedInvoice);
+    return;
   }
 
   if (beforeInvoice && afterInvoice) {
-    console.log('Updating invoice...');
+    console.log('Updating invoice: ', afterInvoice?.id);
+    receivedInvoiceActions.update(afterInvoice as ReceivedInvoice);
+    return;
   }
 
-  logger.info('Invoice written', {
-    afterInvoice,
-    beforeInvoice,
-  });
-
-  const categoriesSnapshot = await db
-    .collection('applicationSettings')
-    .doc('accountCategories')
-    .get();
-
-  logger.info('Account categories', categoriesSnapshot.data());
-
-  console.log('finished!!');
-  return;
+  if (!afterInvoice) {
+    console.log('Deleting invoice: ', beforeInvoice?.id);
+    receivedInvoiceActions.remove(beforeInvoice as ReceivedInvoice);
+    return;
+  }
 };
