@@ -3,7 +3,7 @@ import { onReceivedInvoiceWrittenFunction } from './functions/onReceivedInvoiceW
 
 export const onReceivedInvoiceWritten = onDocumentWritten(
   {
-    document: 'invoices/{invoiceId}',
+    document: 'receivedInvoices/{invoiceId}',
     timeoutSeconds: 10,
   },
   onReceivedInvoiceWrittenFunction

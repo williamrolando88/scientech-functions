@@ -4,7 +4,7 @@ export enum COLLECTIONS {
   APPLICATION_SETTINGS = 'applicationSettings',
   CLIENTS = 'clients',
   PROJECTS = 'projects',
-  INVOICES = 'invoices',
+  RECEIVED_INVOICES = 'receivedInvoices',
   CUSTOMS_PAYMENTS = 'customsPayments',
   NON_DEDUCTIBLEs = 'nonDeductibles',
   SALE_NOTES = 'saleNotes',
