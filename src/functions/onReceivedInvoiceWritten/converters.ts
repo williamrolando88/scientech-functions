@@ -8,7 +8,7 @@ import {
   SaleNote,
 } from '../../common/types/purchases';
 
-export const receivedInvoice2DoubleEntryData = (
+const receivedInvoice2DoubleEntryData = (
   purchase: Purchase
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const invoice = purchase.purchaseData as ReceivedInvoice;
@@ -48,7 +48,7 @@ export const receivedInvoice2DoubleEntryData = (
   };
 };
 
-export const saleNote2DoubleEntryData = (
+const saleNote2DoubleEntryData = (
   purchase: Purchase
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const saleNote = purchase.purchaseData as SaleNote;
@@ -79,7 +79,7 @@ export const saleNote2DoubleEntryData = (
   };
 };
 
-export const customsPayment2DoubleEntryData = (
+const customsPayment2DoubleEntryData = (
   purchase: Purchase
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const customsPayment = purchase.purchaseData as CustomsPayment;
@@ -119,7 +119,7 @@ export const customsPayment2DoubleEntryData = (
   };
 };
 
-export const nonDeductible2DoubleEntryData = (
+const nonDeductible2DoubleEntryData = (
   purchase: Purchase
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const nonDeductible = purchase.purchaseData as NonDeductible;
@@ -148,4 +148,21 @@ export const nonDeductible2DoubleEntryData = (
     locked: true,
     updatedAt: new Date(),
   };
+};
+
+export const purchaseData2DoubleEntryData = (
+  purchase: Purchase
+): Omit<DoubleEntryAccounting, 'createdAt'> => {
+  switch (purchase.type) {
+    case 'receivedInvoice':
+      return receivedInvoice2DoubleEntryData(purchase);
+    case 'customsPayment':
+      return customsPayment2DoubleEntryData(purchase);
+    case 'nonDeductible':
+      return nonDeductible2DoubleEntryData(purchase);
+    case 'saleNote':
+      return saleNote2DoubleEntryData(purchase);
+    default:
+      return receivedInvoice2DoubleEntryData(purchase);
+  }
 };
