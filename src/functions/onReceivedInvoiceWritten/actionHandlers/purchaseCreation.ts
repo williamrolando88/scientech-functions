@@ -14,6 +14,6 @@ export const purchaseCreation = async (purchase: Purchase) => {
     purchase.id ?? ''
   );
 
-  console.info('Creating ' + docRef.id);
+  console.info(`Creating entry ${docRef.id}`);
   await docRef.set(doubleEntryData);
 };

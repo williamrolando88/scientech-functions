@@ -16,6 +16,7 @@ export const purchaseUpdate = async (purchase: Purchase) => {
 
   batch.update(purchaseDocRef, purchaseData2DoubleEntryData(purchase));
 
+  console.info(`Updating entry ${purchaseDocRef.id}`);
   if (!purchase.payment) {
     batch.commit();
     return;
@@ -38,8 +39,10 @@ export const purchaseUpdate = async (purchase: Purchase) => {
 
     paymentEntry.createdAt = new Date();
     paymentEntry.id = paymentDocRef.id;
+    console.info(`Creating entry ${paymentDocRef.id}`);
   } else {
     paymentDocRef = querySnapshot.docs[0].ref;
+    console.info(`Updating entry ${paymentDocRef.id}`);
   }
 
   batch.set(paymentDocRef, paymentEntry, { merge: true });

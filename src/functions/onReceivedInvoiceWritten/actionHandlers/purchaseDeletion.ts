@@ -11,7 +11,7 @@ export const purchaseDeletion = async (purchase: Purchase) => {
     .get();
 
   querySnapshot.forEach((doc) => {
-    console.info(`Doc ${doc.id} marked for deletion`);
+    console.info(`Deleting entry ${doc.id}`);
     batch.delete(doc.ref);
   });
 
