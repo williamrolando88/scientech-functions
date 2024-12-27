@@ -1,30 +1,56 @@
 import { EventHandlerFunction } from '../../common/types/functions';
 import { Purchase } from '../../common/types/purchases';
-import { purchaseCreation } from './actionHandlers/purchaseCreation';
-import { purchaseDeletion } from './actionHandlers/purchaseDeletion';
-import { purchaseUpdate } from './actionHandlers/purchaseUpdate';
+import { paymentActions } from './actionHandlers/paymentActions';
+import { purchaseDataEntry } from './actionHandlers/purchaseDataActions';
 
 export const onPurchaseWrittenFunction: EventHandlerFunction = async (
   event
 ) => {
+  await purchaseDataHandler(event);
+  await paymentHandler(event);
+};
+
+const purchaseDataHandler: EventHandlerFunction = async (event) => {
   const afterDoc = event.data?.after.data();
   const beforeDoc = event.data?.before.data();
 
   if (!beforeDoc) {
-    console.info(`Purchase document ${afterDoc?.id} created`);
-    await purchaseCreation(afterDoc as Purchase);
+    await purchaseDataEntry.create(afterDoc as Purchase);
     return;
   }
 
   if (beforeDoc && afterDoc) {
-    console.info(`Purchase document ${afterDoc?.id} updated`);
-    await purchaseUpdate(afterDoc as Purchase);
+    await purchaseDataEntry.update(afterDoc as Purchase);
     return;
   }
 
   if (!afterDoc) {
-    console.info(`Purchase document ${beforeDoc?.id} deleted`);
-    await purchaseDeletion(beforeDoc as Purchase);
+    await purchaseDataEntry.remove(beforeDoc as Purchase);
+    return;
+  }
+};
+
+const paymentHandler: EventHandlerFunction = async (event) => {
+  const afterDoc = event.data?.after.data();
+  const beforeDoc = event.data?.before.data();
+
+  if (!afterDoc) return;
+
+  const afterPaymentDoc = afterDoc?.payment;
+  const beforePaymentDoc = beforeDoc?.payment;
+
+  if (!beforePaymentDoc) {
+    await paymentActions.create(afterDoc as Purchase);
+    return;
+  }
+
+  if (beforePaymentDoc && afterPaymentDoc) {
+    await paymentActions.update(afterDoc as Purchase);
+    return;
+  }
+
+  if (!afterPaymentDoc) {
+    await paymentActions.remove(afterDoc as Purchase);
     return;
   }
 };
