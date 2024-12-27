@@ -10,7 +10,10 @@ export const purchaseCreation = async (purchase: Purchase) => {
     createdAt: new Date(),
   };
 
-  await DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING)
-    .doc(purchase.id ?? '')
-    .set(doubleEntryData);
+  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc(
+    purchase.id ?? ''
+  );
+
+  console.info('Creating ' + docRef.id);
+  await docRef.set(doubleEntryData);
 };

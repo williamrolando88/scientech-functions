@@ -37,10 +37,8 @@ export const onPurchaseWrittenFunction: EventHandlerFunction = async (
   const afterDoc = event.data?.after.data();
   const beforeDoc = event.data?.before.data();
 
-  const docLogId = `Purchase document ${afterDoc?.id}`;
-
   if (!beforeDoc) {
-    console.log(`${docLogId} created`);
+    console.info(`Purchase document ${afterDoc?.id} created`);
     // Always creates a purchase
     await purchaseCreation(afterDoc as Purchase);
     return;
@@ -48,13 +46,13 @@ export const onPurchaseWrittenFunction: EventHandlerFunction = async (
 
   if (beforeDoc && afterDoc) {
     // It can mean purchase and/or payment update
-    console.log(`${docLogId} deleted`);
+    console.info(`Purchase document ${afterDoc?.id} updated`);
     return;
   }
 
   if (!afterDoc) {
     // Always deletes a purchase
-    console.log(`${docLogId} deleted`);
+    console.info(`Purchase document ${beforeDoc?.id} deleted`);
     await purchaseDeletion(beforeDoc as Purchase);
     return;
   }
