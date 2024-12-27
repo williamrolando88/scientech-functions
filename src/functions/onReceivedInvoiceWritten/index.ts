@@ -1,7 +1,7 @@
 import { EventHandlerFunction } from '../../common/types/functions';
 import { Purchase } from '../../common/types/purchases';
-import { receivedInvoiceActions } from './actionHandlers';
 import { purchaseCreation } from './actionHandlers/purchaseCreation';
+import { purchaseDeletion } from './actionHandlers/purchaseDeletion';
 
 /**
  * TODO: Create an structure that performs the following tasks
@@ -34,29 +34,28 @@ import { purchaseCreation } from './actionHandlers/purchaseCreation';
 export const onPurchaseWrittenFunction: EventHandlerFunction = async (
   event
 ) => {
-  const afterInvoice = event.data?.after.data();
-  const beforeInvoice = event.data?.before.data();
+  const afterDoc = event.data?.after.data();
+  const beforeDoc = event.data?.before.data();
 
-  const docLogId = `Purchase document ${afterInvoice?.id}`;
+  const docLogId = `Purchase document ${afterDoc?.id}`;
 
-  if (!beforeInvoice) {
+  if (!beforeDoc) {
     console.log(`${docLogId} created`);
     // Always creates a purchase
-    purchaseCreation(afterInvoice as Purchase);
+    await purchaseCreation(afterDoc as Purchase);
     return;
   }
 
-  if (!afterInvoice) {
+  if (beforeDoc && afterDoc) {
     // It can mean purchase and/or payment update
-    console.log(`${docLogId} updated`);
-    receivedInvoiceActions.remove(beforeInvoice as Purchase);
+    console.log(`${docLogId} deleted`);
     return;
   }
 
-  if (beforeInvoice && afterInvoice) {
+  if (!afterDoc) {
     // Always deletes a purchase
     console.log(`${docLogId} deleted`);
-    receivedInvoiceActions.update(afterInvoice as Purchase);
+    await purchaseDeletion(beforeDoc as Purchase);
     return;
   }
 };
