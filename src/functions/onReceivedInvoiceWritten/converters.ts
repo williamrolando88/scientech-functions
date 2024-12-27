@@ -9,6 +9,21 @@ import {
   SaleNote,
 } from '../../common/types/purchases';
 
+const documentIdentifier = (purchase: Purchase) => {
+  switch (purchase.type) {
+    case 'receivedInvoice':
+      return `Factura recibida:${purchase.purchaseData.establishment}-${purchase.purchaseData.emissionPoint}-${purchase.purchaseData.sequentialNumber}`;
+    case 'saleNote':
+      return `Nota de venta:${purchase.purchaseData.establishment}-${purchase.purchaseData.emissionPoint}-${purchase.purchaseData.sequentialNumber}`;
+    case 'customsPayment':
+      return `Liquidación aduanera:${purchase.purchaseData.customsPaymentNumber}`;
+    case 'nonDeductible':
+      return `Gasto no deducible:\n\n${purchase.purchaseData.description}`;
+    default:
+      return '';
+  }
+};
+
 const receivedInvoice2DoubleEntryData = (
   purchase: Purchase
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
@@ -17,7 +32,7 @@ const receivedInvoice2DoubleEntryData = (
   return {
     id: purchase.id ?? '',
     issueDate: invoice.issueDate,
-    description: `Factura recibida:${invoice.establishment}-${invoice.emissionPoint}-${invoice.sequentialNumber}\n\n${invoice.description}`,
+    description: `${documentIdentifier(purchase)}\n\n${invoice.description}`,
     ref: {
       ...invoice.ref,
       purchaseId: purchase.id,
@@ -57,7 +72,7 @@ const saleNote2DoubleEntryData = (
   return {
     id: purchase.id ?? '',
     issueDate: saleNote.issueDate,
-    description: `Nota de venta:${saleNote.establishment}-${saleNote.emissionPoint}-${saleNote.sequentialNumber}\n\n${saleNote.description}`,
+    description: `${documentIdentifier(purchase)}\n\n${saleNote.description}`,
     ref: {
       ...saleNote.ref,
       purchaseId: purchase.id,
@@ -88,7 +103,7 @@ const customsPayment2DoubleEntryData = (
   return {
     id: purchase.id ?? '',
     issueDate: customsPayment.issueDate,
-    description: `Liquidación aduanera:${customsPayment.customsPaymentNumber}\n\n${customsPayment.description}`,
+    description: `${documentIdentifier(purchase)}\n\n${customsPayment.description}`,
     ref: {
       ...customsPayment.ref,
       purchaseId: purchase.id,
@@ -128,7 +143,7 @@ const nonDeductible2DoubleEntryData = (
   return {
     id: purchase.id ?? '',
     issueDate: nonDeductible.issueDate,
-    description: `Gasto no deducible:\n\n${nonDeductible.description}`,
+    description: documentIdentifier(purchase),
     ref: {
       ...nonDeductible.ref,
       purchaseId: purchase.id,
@@ -175,7 +190,7 @@ export const payment2DoubleEntry = (
 
   return {
     issueDate: payment.paymentDate,
-    description: `Pago a compra ${purchase.id}`,
+    description: `Pago a ${documentIdentifier(purchase).toLowerCase()}`,
     ref: { ...payment.ref, paymentId: purchase.id },
     transactions: [
       {
