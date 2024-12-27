@@ -1,5 +1,6 @@
 import { DEFAULT_ACCOUNT } from '../../common/constants/settings';
 import { DoubleEntryAccounting } from '../../common/types/doubleEntryAccounting';
+import { Payment } from '../../common/types/payment';
 import {
   CustomsPayment,
   NonDeductible,
@@ -165,4 +166,31 @@ export const purchaseData2DoubleEntryData = (
     default:
       return receivedInvoice2DoubleEntryData(purchase);
   }
+};
+
+export const payment2DoubleEntry = (
+  purchase: Purchase
+): Omit<DoubleEntryAccounting, 'createdAt' | 'id'> => {
+  const payment = purchase.payment as Payment;
+
+  return {
+    issueDate: payment.paymentDate,
+    description: `Pago a compra ${purchase.id}`,
+    ref: { ...payment.ref, paymentId: purchase.id },
+    transactions: [
+      {
+        accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
+        debit: payment.amount,
+        credit: 0,
+      },
+      {
+        accountId: payment.paymentAccount,
+        debit: 0,
+        credit: payment.amount,
+      },
+    ],
+    accounts: [DEFAULT_ACCOUNT.BILLS_TO_PAY, payment.paymentAccount],
+    locked: true,
+    updatedAt: new Date(),
+  };
 };

@@ -2,6 +2,7 @@ import { EventHandlerFunction } from '../../common/types/functions';
 import { Purchase } from '../../common/types/purchases';
 import { purchaseCreation } from './actionHandlers/purchaseCreation';
 import { purchaseDeletion } from './actionHandlers/purchaseDeletion';
+import { purchaseUpdate } from './actionHandlers/purchaseUpdate';
 
 /**
  * TODO: Create an structure that performs the following tasks
@@ -47,6 +48,7 @@ export const onPurchaseWrittenFunction: EventHandlerFunction = async (
   if (beforeDoc && afterDoc) {
     // It can mean purchase and/or payment update
     console.info(`Purchase document ${afterDoc?.id} updated`);
+    await purchaseUpdate(afterDoc as Purchase);
     return;
   }
 
