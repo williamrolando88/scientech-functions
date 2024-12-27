@@ -1,10 +1,10 @@
 import { onDocumentWritten } from 'firebase-functions/v2/firestore';
-import { onReceivedInvoiceWrittenFunction } from './functions/onReceivedInvoiceWritten';
+import { onPurchaseWrittenFunction } from './functions/onReceivedInvoiceWritten';
 
-export const onReceivedInvoiceWritten = onDocumentWritten(
+export const onPurchaseWritten = onDocumentWritten(
   {
-    document: 'receivedInvoices/{invoiceId}',
+    document: 'purchases/{purchaseId}',
     timeoutSeconds: 10,
   },
-  onReceivedInvoiceWrittenFunction
+  onPurchaseWrittenFunction
 );

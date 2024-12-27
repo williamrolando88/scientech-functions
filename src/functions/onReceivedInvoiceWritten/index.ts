@@ -2,7 +2,7 @@ import { EventHandlerFunction } from '../../common/types/functions';
 import { ReceivedInvoice } from '../../common/types/purchases';
 import { receivedInvoiceActions } from './actionHandlers';
 
-export const onReceivedInvoiceWrittenFunction: EventHandlerFunction = async (
+export const onPurchaseWrittenFunction: EventHandlerFunction = async (
   event
 ) => {
   const afterInvoice = event.data?.after.data();

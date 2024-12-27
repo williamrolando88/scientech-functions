@@ -1,4 +1,4 @@
-import { COLLECTIONS } from '../enums/firestoreCollections';
+import { COLLECTIONS_ENUM } from '../enums/firestoreCollections';
 import { db } from '../firebase';
 import { DocumentRef } from '../types/DocumentRef';
 import { DoubleEntryAccounting } from '../types/doubleEntryAccounting';
@@ -12,7 +12,7 @@ export const getByRef = async (
   }
 
   const doubleEntryAccountingSnapshot = await db
-    .collection(COLLECTIONS.DOUBLE_ENTRY_ACCOUNTING)
+    .collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING)
     .where(`ref.${refType}`, '==', refId)
     .where('source', '==', refType.slice(0, -2))
     .get();
