@@ -7,12 +7,16 @@ export const onPurchaseWrittenFunction: EventHandlerFunction = async (
   event
 ) => {
   await purchaseDataHandler(event);
+
+  const afterDoc = event.data?.after.data();
+  if (!afterDoc) return;
+
   await paymentHandler(event);
 };
 
 const purchaseDataHandler: EventHandlerFunction = async (event) => {
-  const afterDoc = event.data?.after.data();
   const beforeDoc = event.data?.before.data();
+  const afterDoc = event.data?.after.data();
 
   if (!beforeDoc) {
     await purchaseDataEntry.create(afterDoc as Purchase);
@@ -30,14 +34,16 @@ const purchaseDataHandler: EventHandlerFunction = async (event) => {
   }
 };
 
+// TODO: Debug this function
 const paymentHandler: EventHandlerFunction = async (event) => {
-  const afterDoc = event.data?.after.data();
   const beforeDoc = event.data?.before.data();
+  const afterDoc = event.data?.after.data();
 
-  if (!afterDoc) return;
-
-  const afterPaymentDoc = afterDoc?.payment;
   const beforePaymentDoc = beforeDoc?.payment;
+  const afterPaymentDoc = afterDoc?.payment;
+
+  console.log('beforePaymentDoc', beforePaymentDoc);
+  console.log('afterPaymentDoc', afterPaymentDoc);
 
   if (!beforePaymentDoc) {
     await paymentActions.create(afterDoc as Purchase);
@@ -50,7 +56,7 @@ const paymentHandler: EventHandlerFunction = async (event) => {
   }
 
   if (!afterPaymentDoc) {
-    await paymentActions.remove(afterDoc as Purchase);
+    await paymentActions.remove(beforeDoc as Purchase);
     return;
   }
 };
