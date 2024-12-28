@@ -34,7 +34,6 @@ const purchaseDataHandler: EventHandlerFunction = async (event) => {
   }
 };
 
-// TODO: Debug this function
 const paymentHandler: EventHandlerFunction = async (event) => {
   const beforeDoc = event.data?.before.data();
   const afterDoc = event.data?.after.data();
@@ -46,9 +45,6 @@ const paymentHandler: EventHandlerFunction = async (event) => {
     console.info('No payment registered');
     return;
   }
-
-  console.log('beforePaymentDoc', beforePaymentDoc);
-  console.log('afterPaymentDoc', afterPaymentDoc);
 
   if (!beforePaymentDoc) {
     await paymentActions.create(afterDoc as Purchase);
