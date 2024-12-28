@@ -24,4 +24,4 @@ jobs:
         with:
           credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
       - run: firebase use ${{ vars.FIREBASE_PROJECT_ID }}
-      - run: firebase deploy --only functions --debug
+      - run: npm run deploy
