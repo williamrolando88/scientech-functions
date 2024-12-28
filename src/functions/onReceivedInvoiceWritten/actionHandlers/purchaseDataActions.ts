@@ -7,14 +7,14 @@ import { purchaseData2DoubleEntryData } from '../converters';
 const create = async (purchase: Purchase) => {
   console.info(`Purchase document ${purchase?.id} created`);
 
+  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc(
+    purchase.id ?? ''
+  );
+
   const doubleEntryData: DoubleEntryAccounting = {
     ...purchaseData2DoubleEntryData(purchase),
     createdAt: new Date(),
   };
-
-  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc(
-    purchase.id ?? ''
-  );
 
   console.info(`Creating entry ${docRef.id}`);
   await docRef.set(doubleEntryData);

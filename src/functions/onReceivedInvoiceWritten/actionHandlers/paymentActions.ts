@@ -6,9 +6,8 @@ import { payment2DoubleEntry } from '../converters';
 
 const create = async (purchase: Purchase) => {
   console.info(`Payment document for ${purchase?.id} created`);
-  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc(
-    purchase.id ?? ''
-  );
+
+  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc();
 
   const paymentEntry: DoubleEntryAccounting = {
     ...payment2DoubleEntry(purchase),
@@ -22,6 +21,7 @@ const create = async (purchase: Purchase) => {
 
 const update = async (purchase: Purchase) => {
   console.info(`Payment document for ${purchase?.id} updated`);
+
   const querySnapshot = await DB.collection(
     COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING
   )

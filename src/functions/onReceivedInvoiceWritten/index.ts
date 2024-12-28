@@ -42,6 +42,11 @@ const paymentHandler: EventHandlerFunction = async (event) => {
   const beforePaymentDoc = beforeDoc?.payment;
   const afterPaymentDoc = afterDoc?.payment;
 
+  if (!beforePaymentDoc && !afterPaymentDoc) {
+    console.info('No payment registered');
+    return;
+  }
+
   console.log('beforePaymentDoc', beforePaymentDoc);
   console.log('afterPaymentDoc', afterPaymentDoc);
 
