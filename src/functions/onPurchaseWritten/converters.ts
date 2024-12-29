@@ -12,11 +12,11 @@ import {
 const documentIdentifier = (purchase: Purchase) => {
   switch (purchase.type) {
     case 'receivedInvoice':
-      return `Factura recibida:${purchase.purchaseData.establishment}-${purchase.purchaseData.emissionPoint}-${purchase.purchaseData.sequentialNumber}`;
+      return `Factura recibida: ${purchase.purchaseData.establishment}-${purchase.purchaseData.emissionPoint}-${purchase.purchaseData.sequentialNumber}`;
     case 'saleNote':
-      return `Nota de venta:${purchase.purchaseData.establishment}-${purchase.purchaseData.emissionPoint}-${purchase.purchaseData.sequentialNumber}`;
+      return `Nota de venta: ${purchase.purchaseData.establishment}-${purchase.purchaseData.emissionPoint}-${purchase.purchaseData.sequentialNumber}`;
     case 'customsPayment':
-      return `Liquidación aduanera:${purchase.purchaseData.customsPaymentNumber}`;
+      return `Liquidación aduanera: ${purchase.purchaseData.customsPaymentNumber}`;
     case 'nonDeductible':
       return `Gasto no deducible:\n\n${purchase.purchaseData.description}`;
     default:
@@ -29,6 +29,26 @@ const receivedInvoice2DoubleEntryData = (
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const invoice = purchase.purchaseData as ReceivedInvoice;
 
+  const transactions = [
+    {
+      accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
+      debit: 0,
+      credit: invoice.total,
+    },
+    {
+      accountId: DEFAULT_ACCOUNT.IVA_TAX_CREDIT,
+      debit: invoice.IVA ?? 0,
+      credit: 0,
+    },
+    {
+      accountId: invoice.expenseAccount,
+      debit: invoice.total - (invoice.IVA ?? 0),
+      credit: 0,
+    },
+  ];
+
+  const accounts = transactions.map((t) => t.accountId);
+
   return {
     id: purchase.id ?? '',
     issueDate: invoice.issueDate,
@@ -37,28 +57,8 @@ const receivedInvoice2DoubleEntryData = (
       ...invoice.ref,
       purchaseId: purchase.id,
     },
-    transactions: [
-      {
-        accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
-        debit: 0,
-        credit: invoice.total,
-      },
-      {
-        accountId: DEFAULT_ACCOUNT.IVA_TAX_CREDIT,
-        debit: invoice.IVA ?? 0,
-        credit: 0,
-      },
-      {
-        accountId: invoice.expenseAccount,
-        debit: invoice.total - (invoice.IVA ?? 0),
-        credit: 0,
-      },
-    ],
-    accounts: [
-      DEFAULT_ACCOUNT.BILLS_TO_PAY,
-      DEFAULT_ACCOUNT.IVA_TAX_CREDIT,
-      invoice.expenseAccount,
-    ],
+    transactions,
+    accounts,
     locked: true,
     updatedAt: new Date(),
   };
@@ -69,6 +69,21 @@ const saleNote2DoubleEntryData = (
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const saleNote = purchase.purchaseData as SaleNote;
 
+  const transactions = [
+    {
+      accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
+      debit: 0,
+      credit: saleNote.total,
+    },
+    {
+      accountId: saleNote.expenseAccount,
+      debit: saleNote.total,
+      credit: 0,
+    },
+  ];
+
+  const accounts = transactions.map((t) => t.accountId);
+
   return {
     id: purchase.id ?? '',
     issueDate: saleNote.issueDate,
@@ -77,19 +92,8 @@ const saleNote2DoubleEntryData = (
       ...saleNote.ref,
       purchaseId: purchase.id,
     },
-    transactions: [
-      {
-        accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
-        debit: 0,
-        credit: saleNote.total,
-      },
-      {
-        accountId: saleNote.expenseAccount,
-        debit: saleNote.total,
-        credit: 0,
-      },
-    ],
-    accounts: [DEFAULT_ACCOUNT.BILLS_TO_PAY, saleNote.expenseAccount],
+    transactions,
+    accounts,
     locked: true,
     updatedAt: new Date(),
   };
@@ -100,6 +104,26 @@ const customsPayment2DoubleEntryData = (
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const customsPayment = purchase.purchaseData as CustomsPayment;
 
+  const transactions = [
+    {
+      accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
+      debit: 0,
+      credit: customsPayment.total,
+    },
+    {
+      accountId: DEFAULT_ACCOUNT.IVA_TAX_CREDIT,
+      debit: customsPayment.IVA,
+      credit: 0,
+    },
+    {
+      accountId: DEFAULT_ACCOUNT.CUSTOMS_PAYMENT.EXPENSE,
+      debit: customsPayment.total - customsPayment.IVA,
+      credit: 0,
+    },
+  ];
+
+  const accounts = transactions.map((t) => t.accountId);
+
   return {
     id: purchase.id ?? '',
     issueDate: customsPayment.issueDate,
@@ -108,28 +132,8 @@ const customsPayment2DoubleEntryData = (
       ...customsPayment.ref,
       purchaseId: purchase.id,
     },
-    transactions: [
-      {
-        accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
-        debit: 0,
-        credit: customsPayment.total,
-      },
-      {
-        accountId: DEFAULT_ACCOUNT.IVA_TAX_CREDIT,
-        debit: customsPayment.IVA,
-        credit: 0,
-      },
-      {
-        accountId: DEFAULT_ACCOUNT.CUSTOMS_PAYMENT.EXPENSE,
-        debit: customsPayment.total - customsPayment.IVA,
-        credit: 0,
-      },
-    ],
-    accounts: [
-      DEFAULT_ACCOUNT.BILLS_TO_PAY,
-      DEFAULT_ACCOUNT.IVA_TAX_CREDIT,
-      DEFAULT_ACCOUNT.CUSTOMS_PAYMENT.EXPENSE,
-    ],
+    transactions,
+    accounts,
     locked: true,
     updatedAt: new Date(),
   };
@@ -140,6 +144,21 @@ const nonDeductible2DoubleEntryData = (
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const nonDeductible = purchase.purchaseData as NonDeductible;
 
+  const transactions = [
+    {
+      accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
+      debit: 0,
+      credit: nonDeductible.total,
+    },
+    {
+      accountId: nonDeductible.expenseAccount,
+      debit: nonDeductible.total,
+      credit: 0,
+    },
+  ];
+
+  const accounts = transactions.map((t) => t.accountId);
+
   return {
     id: purchase.id ?? '',
     issueDate: nonDeductible.issueDate,
@@ -148,19 +167,8 @@ const nonDeductible2DoubleEntryData = (
       ...nonDeductible.ref,
       purchaseId: purchase.id,
     },
-    transactions: [
-      {
-        accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
-        debit: 0,
-        credit: nonDeductible.total,
-      },
-      {
-        accountId: nonDeductible.expenseAccount,
-        debit: nonDeductible.total,
-        credit: 0,
-      },
-    ],
-    accounts: [DEFAULT_ACCOUNT.BILLS_TO_PAY, nonDeductible.expenseAccount],
+    transactions,
+    accounts,
     locked: true,
     updatedAt: new Date(),
   };
@@ -188,24 +196,28 @@ export const payment2DoubleEntry = (
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const payment = purchase.payment as Payment;
 
+  const transactions = [
+    {
+      accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
+      debit: payment.amount,
+      credit: 0,
+    },
+    {
+      accountId: payment.paymentAccount,
+      debit: 0,
+      credit: payment.amount,
+    },
+  ];
+
+  const accounts = transactions.map((t) => t.accountId);
+
   return {
     id: payment.id,
     issueDate: payment.paymentDate,
     description: `Pago a ${documentIdentifier(purchase).toLowerCase()}`,
     ref: { ...payment.ref, paymentId: purchase.id },
-    transactions: [
-      {
-        accountId: DEFAULT_ACCOUNT.BILLS_TO_PAY,
-        debit: payment.amount,
-        credit: 0,
-      },
-      {
-        accountId: payment.paymentAccount,
-        debit: 0,
-        credit: payment.amount,
-      },
-    ],
-    accounts: [DEFAULT_ACCOUNT.BILLS_TO_PAY, payment.paymentAccount],
+    transactions,
+    accounts,
     locked: true,
     updatedAt: new Date(),
   };

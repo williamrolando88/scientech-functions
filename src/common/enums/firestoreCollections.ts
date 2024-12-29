@@ -8,6 +8,7 @@ export enum COLLECTIONS_ENUM {
   EXPENSES = 'expenses',
   DOUBLE_ENTRY_ACCOUNTING = 'doubleEntryAccounting',
   PURCHASES = 'purchases',
+  SALES = 'sales',
 }
 
 export enum SETTINGS_ENUM {

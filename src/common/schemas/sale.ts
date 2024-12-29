@@ -23,6 +23,7 @@ export const billingDocumentSchema = z.object({
 });
 
 const WithholdingSchema = z.object({
+  id: z.string(),
   issueDate: z.coerce.date(),
   issuerName: z.string(),
   issuerId: z.string(ZOD_ERROR.REQUIRED).regex(CI_RUC_REGEX, ZOD_ERROR.CI_RUC),
