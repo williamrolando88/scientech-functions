@@ -42,7 +42,7 @@ export const billingDocument2DoubleEntryData = (
   };
 };
 
-const withholding2DoubleEntryData = (
+export const withholding2DoubleEntryData = (
   sale: Sale
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const data = sale.withholding as Withholding;
@@ -82,7 +82,7 @@ const withholding2DoubleEntryData = (
   };
 };
 
-const paymentCollection2DoubleEntryData = (
+export const paymentCollection2DoubleEntryData = (
   sale: Sale
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const data = sale.paymentCollection as PaymentCollection;
@@ -120,6 +120,42 @@ const paymentCollection2DoubleEntryData = (
     ref: {
       ...data.ref,
       paymentCollectionId: data.id,
+    },
+    transactions,
+    accounts,
+    locked: true,
+    updatedAt: new Date(),
+  };
+};
+
+export const advancePayment2DoubleEntryData = (
+  sale: Sale,
+  index: number
+): Omit<DoubleEntryAccounting, 'createdAt'> => {
+  const data = (sale.advancePayments as PaymentCollection[])[index];
+
+  const transactions = [
+    {
+      accountId: data.paymentAccount,
+      debit: data.amount,
+      credit: 0,
+    },
+    {
+      accountId: DEFAULT_ACCOUNT.CUSTOMER_ADVANCE,
+      debit: 0,
+      credit: data.amount,
+    },
+  ];
+
+  const accounts = transactions.map((t) => t.accountId);
+
+  return {
+    id: data.id,
+    issueDate: data.paymentDate,
+    description: '',
+    ref: {
+      ...data.ref,
+      advancePaymentId: data.id,
     },
     transactions,
     accounts,
