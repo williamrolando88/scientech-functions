@@ -6,7 +6,7 @@ import {
   PurchaseSchema,
   ReceivedInvoiceSchema,
   SaleNoteSchema,
-} from '../schemas/purchases';
+} from '../schemas/purchase';
 
 export type ReceivedInvoice = z.infer<typeof ReceivedInvoiceSchema>;
 export type CustomsPayment = z.infer<typeof CustomsPaymentSchema>;
