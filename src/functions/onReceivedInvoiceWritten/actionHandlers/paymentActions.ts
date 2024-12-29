@@ -7,13 +7,14 @@ import { payment2DoubleEntry } from '../converters';
 const create = async (purchase: Purchase) => {
   console.info(`Payment document for ${purchase?.id} created`);
 
-  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc();
-
   const paymentEntry: DoubleEntryAccounting = {
     ...payment2DoubleEntry(purchase),
     createdAt: new Date(),
-    id: docRef.id,
   };
+
+  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc(
+    purchase.payment?.id ?? ''
+  );
 
   console.info(`Creating entry ${docRef.id}`);
   await docRef.set(paymentEntry);
@@ -22,34 +23,22 @@ const create = async (purchase: Purchase) => {
 const update = async (purchase: Purchase) => {
   console.info(`Payment document for ${purchase?.id} updated`);
 
-  const querySnapshot = await DB.collection(
-    COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING
-  )
-    .where('ref.paymentId', '==', purchase.id)
-    .get();
+  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc(
+    purchase.payment?.id ?? ''
+  );
 
-  const paymentDocRef = querySnapshot.docs[0].ref;
-
-  console.info(`Updating entry ${paymentDocRef.id}`);
-  paymentDocRef.set(payment2DoubleEntry(purchase), { merge: true });
+  console.info(`Updating entry ${docRef.id}`);
+  docRef.set(payment2DoubleEntry(purchase), { merge: true });
 };
 
 const remove = async (purchase: Purchase) => {
   console.info(`Payment document for ${purchase?.id} deleted`);
 
-  const batch = DB.batch();
-  const querySnapshot = await DB.collection(
-    COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING
-  )
-    .where('ref.paymentId', '==', purchase.id)
-    .get();
+  const docRef = DB.collection(COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING).doc(
+    purchase.payment?.id ?? ''
+  );
 
-  querySnapshot.forEach((doc) => {
-    console.info(`Deleting entry ${doc.id}`);
-    batch.delete(doc.ref);
-  });
-
-  await batch.commit();
+  await docRef.delete();
 };
 
 export const paymentActions = {
