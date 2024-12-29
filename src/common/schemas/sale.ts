@@ -3,7 +3,7 @@ import { ZOD_ERROR } from '../constants/errors';
 import { CI_RUC_REGEX } from '../constants/regex';
 import { DocumentRefSchema } from './documentRef';
 
-export const billingDocumentSchema = z.object({
+export const BillingDocumentSchema = z.object({
   id: z.string().optional(),
   issueDate: z.coerce.date(),
   recipientName: z.string(),
@@ -22,7 +22,7 @@ export const billingDocumentSchema = z.object({
   paid: z.boolean().default(false),
 });
 
-const WithholdingSchema = z.object({
+export const WithholdingSchema = z.object({
   id: z.string(),
   issueDate: z.coerce.date(),
   issuerName: z.string(),
@@ -31,23 +31,24 @@ const WithholdingSchema = z.object({
   emissionPoint: z.coerce.number().positive(),
   sequentialNumber: z.coerce.number().positive(),
   IVAWithholding: z.number().nonnegative().optional(),
-  RentWithholding: z.number().nonnegative().optional(),
+  IncomeWithholding: z.number().nonnegative().optional(),
   total: z.number().positive(),
   ref: DocumentRefSchema.optional(),
 });
 
-const PaymentCollectionSchema = z.object({
+export const PaymentCollectionSchema = z.object({
   id: z.string(),
   amount: z.number(),
   paymentDate: z.coerce.date(),
+  paymentAccount: z.string(),
   ref: DocumentRefSchema,
 });
 
 export const SaleSchema = z.object({
   id: z.string().optional(),
-  billingDocument: billingDocumentSchema,
-  withholding: WithholdingSchema,
-  paymentCollection: PaymentCollectionSchema,
-  advancePayments: PaymentCollectionSchema.array(),
+  billingDocument: BillingDocumentSchema,
+  withholding: WithholdingSchema.nullish(),
+  paymentCollection: PaymentCollectionSchema.nullish(),
+  advancePayments: PaymentCollectionSchema.array().nullish(),
   paymentDue: z.number().nonnegative(),
 });
