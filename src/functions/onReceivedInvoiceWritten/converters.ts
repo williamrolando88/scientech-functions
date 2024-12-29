@@ -1,9 +1,9 @@
 import { DEFAULT_ACCOUNT } from '../../common/constants/settings';
 import { DoubleEntryAccounting } from '../../common/types/doubleEntryAccounting';
-import { Payment } from '../../common/types/payment';
 import {
   CustomsPayment,
   NonDeductible,
+  Payment,
   Purchase,
   ReceivedInvoice,
   SaleNote,
@@ -185,10 +185,11 @@ export const purchaseData2DoubleEntryData = (
 
 export const payment2DoubleEntry = (
   purchase: Purchase
-): Omit<DoubleEntryAccounting, 'createdAt' | 'id'> => {
+): Omit<DoubleEntryAccounting, 'createdAt'> => {
   const payment = purchase.payment as Payment;
 
   return {
+    id: payment.id,
     issueDate: payment.paymentDate,
     description: `Pago a ${documentIdentifier(purchase).toLowerCase()}`,
     ref: { ...payment.ref, paymentId: purchase.id },

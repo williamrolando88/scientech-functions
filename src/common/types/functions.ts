@@ -7,4 +7,4 @@ import {
 
 export type EventHandlerFunction = (
   event: FirestoreEvent<Change<DocumentSnapshot> | undefined, ParamsOf<string>>
-) => any | Promise<any>;
+) => unknown | Promise<unknown>;
