@@ -70,7 +70,7 @@ export const withholding2DoubleEntryData = (
   return {
     id: data.id,
     issueDate: data.issueDate,
-    description: '',
+    description: `Retencion de ${documentIdentifier(sale).toLowerCase()}`,
     ref: {
       ...data.ref,
       withholdingId: data.id,
@@ -116,7 +116,7 @@ export const paymentCollection2DoubleEntryData = (
   return {
     id: data.id,
     issueDate: data.paymentDate,
-    description: '',
+    description: `Cobro de ${documentIdentifier(sale).toLowerCase()}`,
     ref: {
       ...data.ref,
       paymentCollectionId: data.id,
@@ -132,6 +132,7 @@ export const advancePayment2DoubleEntryData = (
   sale: Sale,
   index: number
 ): Omit<DoubleEntryAccounting, 'createdAt'> => {
+  // TODO: Think better about how advance payments should be processed
   const data = (sale.advancePayments as PaymentCollection[])[index];
 
   const transactions = [
