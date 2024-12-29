@@ -25,6 +25,8 @@ export const DEFAULT_ACCOUNT = {
   },
   IVA_TAX_CREDIT: '1.01.05.01',
   BILLS_TO_PAY: '2.01.03',
+  ACCOUNTS_RECEIVABLE: '1.01.02.05.02.01',
+  TAXES_PAYABLE: '2.01.07.01',
 };
 
 export const ALLOWED_ACCOUNTS = {

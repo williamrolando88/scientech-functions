@@ -1,3 +1,4 @@
+import { DEFAULT_ACCOUNT } from '../../common/constants/settings';
 import { DoubleEntryAccounting } from '../../common/types/doubleEntryAccounting';
 import { Sale } from '../../common/types/sale';
 
@@ -11,9 +12,19 @@ export const billingDocument2DoubleEntryData = (
 
   const transactions = [
     {
-      accountId: '',
-      debit: 0,
+      accountId: DEFAULT_ACCOUNT.ACCOUNTS_RECEIVABLE,
+      debit: data.total,
       credit: 0,
+    },
+    {
+      accountId: data.saleAccount,
+      debit: 0,
+      credit: data.taxedSubtotal,
+    },
+    {
+      accountId: DEFAULT_ACCOUNT.TAXES_PAYABLE,
+      debit: 0,
+      credit: data.IVA,
     },
   ];
 
