@@ -41,6 +41,7 @@ export const PaymentCollectionSchema = z.object({
   amount: z.number(),
   paymentDate: z.coerce.date(),
   paymentAccount: z.string(),
+  advancePaymentAmount: z.number(),
   ref: DocumentRefSchema,
 });
 
@@ -49,6 +50,5 @@ export const SaleSchema = z.object({
   billingDocument: BillingDocumentSchema,
   withholding: WithholdingSchema.nullish(),
   paymentCollection: PaymentCollectionSchema.nullish(),
-  advancePayments: PaymentCollectionSchema.array().nullish(),
   paymentDue: z.number().nonnegative(),
 });

@@ -1,6 +1,7 @@
 import { EventHandlerFunction } from '../../common/types/functions';
 import { Sale } from '../../common/types/sale';
 import { billingDocument } from './actionHandlers/billingDocumentActions';
+import { withholding } from './actionHandlers/withholdingActions';
 
 export const onSalesWrittenFunction: EventHandlerFunction = async (event) => {
   await billingDocumentHandler(event);
@@ -10,7 +11,6 @@ export const onSalesWrittenFunction: EventHandlerFunction = async (event) => {
 
   await withholdingHandler(event);
   await paymentCollectionHandler(event);
-  await advancePaymentsHandler(event);
 };
 
 const billingDocumentHandler: EventHandlerFunction = async (event) => {
@@ -36,14 +36,32 @@ const billingDocumentHandler: EventHandlerFunction = async (event) => {
 const withholdingHandler: EventHandlerFunction = async (event) => {
   const beforeDoc = event.data?.before.data();
   const afterDoc = event.data?.after.data();
+
+  const beforeWithholdingDoc = beforeDoc?.withholding;
+  const afterWithholdingDoc = afterDoc?.withholding;
+
+  if (!beforeWithholdingDoc && !afterWithholdingDoc) {
+    console.info('No withholding registered');
+    return;
+  }
+
+  if (!beforeWithholdingDoc) {
+    await withholding.create(afterDoc as Sale);
+    return;
+  }
+
+  if (beforeWithholdingDoc && afterWithholdingDoc) {
+    await withholding.update(afterDoc as Sale);
+    return;
+  }
+
+  if (!afterWithholdingDoc) {
+    await withholding.remove(beforeDoc as Sale);
+    return;
+  }
 };
 
 const paymentCollectionHandler: EventHandlerFunction = async (event) => {
-  const beforeDoc = event.data?.before.data();
-  const afterDoc = event.data?.after.data();
-};
-
-const advancePaymentsHandler: EventHandlerFunction = async (event) => {
   const beforeDoc = event.data?.before.data();
   const afterDoc = event.data?.after.data();
 };

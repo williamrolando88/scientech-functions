@@ -100,17 +100,6 @@ export const paymentCollection2DoubleEntryData = (
     },
   ];
 
-  if (!sale.advancePayments?.length) {
-    const advanceAmount =
-      sale.advancePayments?.reduce((acc, p) => acc + p.amount, 0) ?? 0;
-
-    transactions.push({
-      accountId: DEFAULT_ACCOUNT.CUSTOMER_ADVANCE,
-      debit: advanceAmount,
-      credit: 0,
-    });
-  }
-
   const accounts = transactions.map((t) => t.accountId);
 
   return {
@@ -120,43 +109,6 @@ export const paymentCollection2DoubleEntryData = (
     ref: {
       ...data.ref,
       paymentCollectionId: data.id,
-    },
-    transactions,
-    accounts,
-    locked: true,
-    updatedAt: new Date(),
-  };
-};
-
-export const advancePayment2DoubleEntryData = (
-  sale: Sale,
-  index: number
-): Omit<DoubleEntryAccounting, 'createdAt'> => {
-  // TODO: Think better about how advance payments should be processed
-  const data = (sale.advancePayments as PaymentCollection[])[index];
-
-  const transactions = [
-    {
-      accountId: data.paymentAccount,
-      debit: data.amount,
-      credit: 0,
-    },
-    {
-      accountId: DEFAULT_ACCOUNT.CUSTOMER_ADVANCE,
-      debit: 0,
-      credit: data.amount,
-    },
-  ];
-
-  const accounts = transactions.map((t) => t.accountId);
-
-  return {
-    id: data.id,
-    issueDate: data.paymentDate,
-    description: '',
-    ref: {
-      ...data.ref,
-      advancePaymentId: data.id,
     },
     transactions,
     accounts,
