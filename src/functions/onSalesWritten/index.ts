@@ -5,7 +5,6 @@ import { paymentCollection } from './actionHandlers/paymentCollectionActions';
 import { withholding } from './actionHandlers/withholdingActions';
 
 // TODO: Upsert client name when invoice is stored
-// TODO: Clean up all unused code
 
 export const onSalesWrittenFunction: EventHandlerFunction = async (event) => {
   await billingDocumentHandler(event);
