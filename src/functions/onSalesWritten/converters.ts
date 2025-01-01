@@ -34,7 +34,7 @@ export const billingDocument2DoubleEntryData = (
     id: sale.id,
     issueDate: data.issueDate,
     description: `${documentIdentifier(sale)}\nA: ${data.recipientName}\n\n${data.description}`,
-    ref: { ...data.ref, sellId: sale.id },
+    ref: { ...data.ref, saleId: sale.id },
     transactions,
     accounts,
     locked: true,
@@ -96,9 +96,17 @@ export const paymentCollection2DoubleEntryData = (
     {
       accountId: DEFAULT_ACCOUNT.ACCOUNTS_RECEIVABLE,
       debit: 0,
-      credit: data.amount,
+      credit: data.amount + (data.advancePaymentAmount ?? 0),
     },
   ];
+
+  if (data.advancePaymentAmount) {
+    transactions.push({
+      accountId: DEFAULT_ACCOUNT.CUSTOMER_ADVANCE,
+      debit: data.advancePaymentAmount,
+      credit: 0,
+    });
+  }
 
   const accounts = transactions.map((t) => t.accountId);
 
