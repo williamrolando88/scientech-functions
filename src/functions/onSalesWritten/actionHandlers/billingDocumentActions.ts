@@ -38,7 +38,7 @@ const remove = async (sale: Sale) => {
   const querySnapshot = await DB.collection(
     COLLECTIONS_ENUM.DOUBLE_ENTRY_ACCOUNTING
   )
-    .where('ref.sellId', '==', sale.id)
+    .where('ref.saleId', '==', sale.id)
     .get();
 
   querySnapshot.forEach((doc) => {
