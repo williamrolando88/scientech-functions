@@ -4,11 +4,14 @@ import { billingDocument } from './actionHandlers/billingDocumentActions';
 import { paymentCollection } from './actionHandlers/paymentCollectionActions';
 import { withholding } from './actionHandlers/withholdingActions';
 
+// TODO: Upsert client name when invoice is stored
+// TODO: Clean up all unused code
+
 export const onSalesWrittenFunction: EventHandlerFunction = async (event) => {
   await billingDocumentHandler(event);
 
   const afterDoc = event.data?.after.data();
-  if (afterDoc) return;
+  if (!afterDoc) return;
 
   await withholdingHandler(event);
   await paymentCollectionHandler(event);

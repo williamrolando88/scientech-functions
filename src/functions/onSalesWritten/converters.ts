@@ -34,7 +34,7 @@ export const billingDocument2DoubleEntryData = (
     id: sale.id,
     issueDate: data.issueDate,
     description: `${documentIdentifier(sale)}\nA: ${data.recipientName}\n\n${data.description}`,
-    ref: { ...data.ref, sellId: sale.id },
+    ref: { ...data.ref, saleId: sale.id },
     transactions,
     accounts,
     locked: true,
