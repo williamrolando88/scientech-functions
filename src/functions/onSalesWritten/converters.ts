@@ -96,25 +96,16 @@ export const paymentCollection2DoubleEntryData = (
     {
       accountId: DEFAULT_ACCOUNT.ACCOUNTS_RECEIVABLE,
       debit: 0,
-      credit: data.amount,
+      credit: data.amount + (data.advancePaymentAmount ?? 0),
     },
   ];
 
   if (data.advancePaymentAmount) {
-    const advancePaymentTransactions = [
-      {
-        accountId: DEFAULT_ACCOUNT.ACCOUNTS_RECEIVABLE,
-        debit: 0,
-        credit: data.advancePaymentAmount,
-      },
-      {
-        accountId: DEFAULT_ACCOUNT.CUSTOMER_ADVANCE,
-        debit: data.advancePaymentAmount,
-        credit: 0,
-      },
-    ];
-
-    transactions.push(...advancePaymentTransactions);
+    transactions.push({
+      accountId: DEFAULT_ACCOUNT.CUSTOMER_ADVANCE,
+      debit: data.advancePaymentAmount,
+      credit: 0,
+    });
   }
 
   const accounts = transactions.map((t) => t.accountId);
